@@ -1,6 +1,6 @@
 
 document.addEventListener("DOMContentLoaded",function() {
-
+    console.log("Starting d3 lib!!!");
     let height = 500,
         width = 500 * 2,
         margin = 30;
