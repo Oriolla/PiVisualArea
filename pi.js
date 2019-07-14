@@ -1,5 +1,5 @@
 
-!function() {
+document.addEventListener("DOMContentLoaded",function() {
 
     let height = 500,
         width = 500 * 2,
@@ -111,4 +111,4 @@
     };
     FirstDrawSectors();
     input_counter.oninput = drawSectors;
-}();
+}());
