@@ -20,7 +20,8 @@
         }
         #number-of-sectors {
             background-color: rgba(255, 255, 255, 1);
-            width: 1200px;
+            width: 800px;
+            height: 600px;
             padding: 20px;
             margin: auto;
             display: -webkit-flex;
@@ -100,8 +101,8 @@
 
     document.addEventListener("DOMContentLoaded",function() {
         console.log("Starting d3 lib!!!");
-        let height = 500,
-            width = 500 * 2,
+        let height = 450,
+            width = 400 * 2,
             margin = 30;
         d3.select("#number-of-sectors").append("svg")
             .attr("class", "axis")
