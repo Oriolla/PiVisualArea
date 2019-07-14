@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+    <meta charset="UTF-8">
+    <title>Area of circle</title>
+    <style>
+        #container-pi-visual {
+            font: 25px Verdana;
+            background-image: url("fon.jpg");
+            background-position: left bottom;
+            background-repeat: repeat;
+            padding: 20px;
+        }
+        .sector-title-h3{
+            margin: auto;
+            text-align: center;
+        }
+        #number-of-sectors {
+            background-color: rgba(255, 255, 255, 1);
+            width: 800px;
+            height: 600px;
+            padding: 20px;
+            margin: auto;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .sector-input-block{
+            padding: 20px;
+        }
+
+        #half-number-of-sectors {
+            position: relative;
+            background: #a7a7a7;
+            padding: 3px;
+            border-radius: 50px;
+            -webkit-appearance: none;
+            margin: 10px 0;
+            width: 400px;
+            height: 1px;
+            outline: none;
+            cursor: pointer;
+        }
+        #half-number-of-sectors::-webkit-slider-thumb {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background: #4a4ba2;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -3.6px;
+        }
+        .rs-label {
+            position: relative;
+            transform-origin: center center;
+            display: block;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: bold;
+            padding-top: 10px;
+            box-sizing: border-box;
+            border: 2px solid #4a4ba2;
+            margin-left: -10px;
+            left: attr(value);
+            color: #4a4ba2;
+            font-style: normal;
+            font-weight: normal;
+            line-height: normal;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="container-pi-visual">
+    <div id="number-of-sectors">
+        <div class = "sector-input-block">
+            <h3 class="sector-title-h3">Площадь круга</h3>
+            <p style="font-size: 1.6rem;">$$S = \frac{C}{2}*r = \frac{2*\Pi *r}{2}*r = \Pi * r^{2}$$</p>
+            <div class="range-slider">
+                <span id="out-half-number-of-sectors" class="rs-label"></span>
+                <input id="half-number-of-sectors"
+                       type="range"
+                       placeholder="Количество секторов"
+                       min="2" max="200" step="2"
+                       value="2"
+                >
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    document.addEventListener("DOMContentLoaded",function() {
+        console.log("Starting d3 lib!!!");
+        let height = 450,
+            width = 400 * 2,
+            margin = 30;
+        d3.select("#number-of-sectors").append("svg")
+            .attr("class", "axis")
+            .attr("width", width)
+            .attr("height", height)
+            .style('border', '1px solid #d2d2d2');
+        let randomColor = function () {
+            let golden_ratio_conjugate = 0.618033988749895;
+            let h = Math.random();
+            let hslToRgb = function (h, s, l) {
+                let r, g, b;
+                if (s == 0) {
+                    r = g = b = l; // achromatic
+                } else {
+                    function hue2rgb(p, q, t) {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1 / 6) return p + (q - p) * 6 * t;
+                        if (t < 1 / 2) return q;
+                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                        return p;
+                    }
+
+                    let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    let p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1 / 3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1 / 3);
+                }
+                return '#' + Math.round(r * 255).toString(16) + Math.round(g * 255).toString(16) + Math.round(b * 255).toString(16);
+            };
+            return function () {
+                h += golden_ratio_conjugate;
+                h %= 1;
+                return hslToRgb(h, 0.5, 0.60);
+            };
+        };
+        let drawCircles = function (counter, radius, svg) {
+            let angle = 360 / counter,
+                half_angle = angle / 2,
+                len_horda = 2 * radius * Math.sin(half_angle * Math.PI / 180),
+                width = svg.style("width").replace("px", ""),
+                height = svg.style("height").replace("px", "");
+            heigh_triangle_sector = Math.sqrt(radius * radius - Math.pow(len_horda / 2, 2));
+
+            let arcA = d3.svg.arc()
+                .innerRadius(0)
+                .outerRadius(radius)
+                .startAngle(-half_angle * Math.PI / 180)
+                .endAngle(half_angle * Math.PI / 180);
+            let arcB = d3.svg.arc()
+                .innerRadius(0)
+                .outerRadius(radius)
+                .startAngle(Math.PI - half_angle * Math.PI / 180)
+                .endAngle(Math.PI + half_angle * Math.PI / 180);
+            let start = width / 4 - radius;
+            for (let i = 0; i < counter; i++) {
+                let arc = d3.svg.arc()
+                    .innerRadius(0)
+                    .outerRadius(radius)
+                    .startAngle(i * angle * Math.PI / 180)
+                    .endAngle((i + 1) * angle * Math.PI / 180);
+                svg.append('path')
+                    .attr('d', arc)
+                    .attr('transform', 'translate(' + (width / 4 * 3) + ',' + (height / 2) + ')')
+                    .attr('fill', randomColor())
+                    .attr("class", "arc");
+                if (i % 2 == 1) {
+                    svg.append('path')
+                        .attr('d', arcA)
+                        .attr('transform', 'translate(' + (start + (i + 1) * len_horda / 2) + ',' + (height / 2) + ')')
+                        .attr('fill', randomColor())
+                        .attr("class", "arc");
+                } else {
+                    svg.append('path')
+                        .attr('d', arcB)
+                        .attr('transform', 'translate(' + (start + (i + 1) * len_horda / 2) + ',' + (height / 2 - radius + (radius - heigh_triangle_sector)) + ')')
+                        .attr('fill', randomColor())
+                        .attr("class", "arc");
+                }
+            }
+        };
+        let clearArc = function (svg) {
+            svg.selectAll(".arc").remove();
+        };
+        let clearDrawSectors = function (rangeSliderSector) {
+            let rangeSectorText = document.getElementById('out-half-number-of-sectors');
+            rangeSectorText.innerHTML = rangeSliderSector.value;
+            let bulletPosition = (rangeSliderSector.value / rangeSliderSector.max);
+            let scrollWidth = rangeSliderSector.scrollWidth - 32;
+            rangeSectorText.style.left = (bulletPosition * scrollWidth) + "px";
+
+            let svg = d3.select(".axis"),
+                radius = Math.min(width - 2 * margin, height - 2 * margin) / 4;
+            clearArc(svg);
+            drawCircles(rangeSliderSector.value, radius, svg);
+        };
+        let input_counter = document.getElementById('half-number-of-sectors');
+        drawSectors = function (event) {
+            let counter = event.target;
+            clearDrawSectors(counter);
+        };
+        let FirstDrawSectors = function () {
+            let rangeSliderSector = document.getElementById('half-number-of-sectors');
+            clearDrawSectors(rangeSliderSector);
+        };
+        FirstDrawSectors();
+        input_counter.oninput = drawSectors;
+    }());
+</script>
+
+
+</body>
+</html>
